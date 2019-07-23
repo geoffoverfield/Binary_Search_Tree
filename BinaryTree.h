@@ -65,7 +65,7 @@ public:
         Clear(root);
     }
     
-	void Insert(T &)
+	void Insert(T& data)
     {
         Node<T> *newNode = new Node<T>(data);
         Node<T> *parent = NULL;
@@ -93,7 +93,7 @@ public:
         }
     }
     
-	void Delete(T &pSearch)
+	void Delete(T& pSearch)
     {
         if (IsEmpty())
         {
@@ -199,7 +199,7 @@ public:
         }
     }
     
-	Node<T> *Search(T &pSearch)
+	Node<T> *Search(T& pSearch)
     {
         Node<T> *current = root;
         while (current)
@@ -220,10 +220,63 @@ public:
     {
         return size;
     }
+    
+    int getDepth(Node* root)
+    {
+        if (root == NULL) return 0;
+        
+        int left = getDepth(root->left);
+        int right = getDepth(root->right);
+        return max(left, right) +1;
+    }
+
+    int getNumberOfLeafNodes()
+    {
+        size_t iReturn = 0;
+        Node *curr = root;
+        while (curr)
+        {
+            if (!curr->left && !curr->right) iReturn++;
+            else if (curr-left) curr = curr->left;
+            else curr = curr->right;
+        }
+        
+        return iReturn;
+    }
 
 	bool isEmpty()
     {
         return bool(root == NULL);
+    }
+    
+    bool isIdentical(BST* pOther)
+    {
+        if (root == NULL && pOther->root == NULL) return true;
+        if (root == NULL || pOther->root == NULL) return false;
+        
+        Node* curr = root;
+        Node* other = pOther->root;
+        
+        while(curr && other)
+        {
+            if (curr->nodeData != other->nodeData) return false;
+            else
+            {
+                if (curr-left && other->left)
+                {
+                    curr = curr->left;
+                    other = other->left;
+                }
+                else if (curr->right && other->right)
+                {
+                    curr = curr->right;
+                    other = other->right;
+                }
+                else return false;
+            }
+        }
+        
+        return true;
     }
 
 	void Clear(Node<T> *node)
@@ -241,29 +294,29 @@ public:
         if (node != NULL)
         {
             if (node->left)
-                InOrder(node->left);
-            //cout << node->nodeData << "\t";
+                TraverseInOrderFromNode(node->left);
+            cout << node->nodeData << "\t";
             if (node->right)
-                InOrder(node->right);
+                TraverseInOrderFromNode(node->right);
         }
     }
     
     void TraversePreOrderFromNode(Node<T> *)
     {
-        //cout << node->nodeData << "\t";
+        cout << node->nodeData << "\t";
         if (node->left)
-            PreOrder(node->left);
+            TraversePreOrderFromNode(node->left);
         if (node->right)
-            PreOrder(node->right);
+            TraversePreOrderFromNode(node->right);
     }
     
     void TraversePostOrderFromNode(Node<T> *)
     {
         if (node->left)
-            PostOrder(node->left);
+            TraversePostOrderFromNode(node->left);
         if (node->right)
-            PostOrder(node->right);
-        //cout << node->nodeData << "\t";
+            TraversePostOrderFromNode(node->right);
+        cout << node->nodeData << "\t";
     }
 
     void TraverseInOrderFromRoot()
@@ -279,6 +332,25 @@ public:
 	void TraversePostOrderFromRoot()
     {
         TraversePostOrderFromNode(root);
+    }
+    
+    void TraverseByLevel()
+    {
+        if (!root) return;
+        queue<Node*> q;
+        q.push(root);
+        
+        Node* temp;
+        while(!q.empty())
+        {
+            temp = q.front();
+            q.pop();
+            cout << temp->nodeData << endl;
+            if (temp->left)
+                q.push(temp->left);
+            if (q->right)
+                q.push(temp->right);
+        }
     }
     
 private:
